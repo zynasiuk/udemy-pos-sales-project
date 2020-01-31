@@ -1,5 +1,15 @@
+<!-- jQuery 3 -->
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- iCheck -->
+<script src="plugins/iCheck/icheck.min.js"></script>
+<!-- sweetalert -->
+<script src="bower_components/sweetalert/sweetalert.js">
+    </script>
+
 <?php
-// role admin or user; create user.php
+// aby nie dostac sie do dashboard przez wpisywanie adresu http, stworz seesje a pozniej w warunkach uzyj $_SESSION
 include_once'connectdb.php';
 session_start();
 if(isset($_POST['btn_login'])) {
@@ -11,16 +21,52 @@ if(isset($_POST['btn_login'])) {
     $select->execute();
 
     $row = $select->fetch(PDO::FETCH_ASSOC);
-
+    
+    
     if($row['useremail']==$useremail AND $row['password']==$password AND $row['role']=="Admin") {
-        echo $success="Login successful";
-        header('refresh:1;dashboard.php');
+        $_SESSION['userid'] =$row['userid'];
+        $_SESSION['username'] =$row['username'];
+        $_SESSION['useremail'] =$row['useremail'];
+        $_SESSION['role'] =$row['role'];
+        
+        echo '
+        <script type="text/javascript">
+        jQuery(
+        function validation(){
+        swal({
+  title: "Hi '.$_SESSION['username'].'!",
+  text: "Login successful!",
+  icon: "success",
+  button: "Ok!",
+});
+        });     
+        </script>
+        
+        ';
+        header('refresh:2;dashboard.php');
+        
     } else if($row['useremail']==$useremail AND $row['password']==$password AND $row['role']=="User"){
-         echo "Login successful";
-        header('refresh:1;user.php');
-    } else {
-        echo 'Login failed';
-    }
+        $_SESSION['userid'] =$row['userid'];
+        $_SESSION['username'] =$row['username'];
+        $_SESSION['useremail'] =$row['useremail'];
+        $_SESSION['role'] =$row['role'];
+       
+          echo '
+        <script type="text/javascript">
+        jQuery(
+        function validation(){
+        swal({
+  title: "Hi '.$_SESSION['username'].'!",
+  text: "Login successful!",
+  icon: "success",
+  button: "Ok!",
+});
+        });     
+        </script>       
+        ';
+        
+        header('refresh:2;user.php');
+    } 
 }
 ?>
 
@@ -65,11 +111,11 @@ if(isset($_POST['btn_login'])) {
 
     <form action="" method="post">
       <div class="form-group has-feedback">
-        <input type="email" class="form-control" placeholder="Email" name="txt_email">
+        <input type="email" class="form-control" placeholder="Email" name="txt_email" required>
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
-        <input type="password" class="form-control" placeholder="Password" name="txt_password">
+        <input type="password" class="form-control" placeholder="Password" name="txt_password" required>
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
       <div class="row">
@@ -94,12 +140,10 @@ if(isset($_POST['btn_login'])) {
 </div>
 <!-- /.login-box -->
 
-<!-- jQuery 3 -->
-<script src="bower_components/jquery/dist/jquery.min.js"></script>
-<!-- Bootstrap 3.3.7 -->
-<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<!-- iCheck -->
-<script src="plugins/iCheck/icheck.min.js"></script>
+
+
+
+
 <script>
   $(function () {
     $('input').iCheck({
