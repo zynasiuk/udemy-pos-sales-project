@@ -9,13 +9,11 @@
     </script>
 
 <?php
-// aby nie dostac sie do dashboard przez wpisywanie adresu http, stworz seesje a pozniej w warunkach uzyj $_SESSION
 include_once'connectdb.php';
 session_start();
 if(isset($_POST['btn_login'])) {
     $useremail = $_POST['txt_email'];
     $password = $_POST['txt_password'];    
- //  echo $useremail." - ".$password;
     $select = $pdo->prepare("select * from tbl_user where useremail='$useremail' AND password='$password'");
     
     $select->execute();
@@ -120,7 +118,7 @@ if(isset($_POST['btn_login'])) {
       </div>
       <div class="row">
         <div class="col-xs-8">
-    <a href="#">I forgot my password</a>
+    <a href="#" onclick="swal('To get password','Please contact Admin','error',);">I forgot my password</a>
         </div>
         <!-- /.col -->
         <div class="col-xs-4">
@@ -130,19 +128,10 @@ if(isset($_POST['btn_login'])) {
       </div>
     </form>
 
-
-
-
-
-
   </div>
   <!-- /.login-box-body -->
 </div>
 <!-- /.login-box -->
-
-
-
-
 
 <script>
   $(function () {
