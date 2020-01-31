@@ -27,8 +27,7 @@ if(isset($_POST['btn_login'])) {
         $_SESSION['useremail'] =$row['useremail'];
         $_SESSION['role'] =$row['role'];
         
-        echo '
-        <script type="text/javascript">
+        echo '<script type="text/javascript">
         jQuery(
         function validation(){
         swal({
@@ -38,10 +37,8 @@ if(isset($_POST['btn_login'])) {
   button: "Ok!",
 });
         });     
-        </script>
-        
-        ';
-        header('refresh:2;dashboard.php');
+        </script>';
+        header('refresh:1;dashboard.php');
         
     } else if($row['useremail']==$useremail AND $row['password']==$password AND $row['role']=="User"){
         $_SESSION['userid'] =$row['userid'];
@@ -63,8 +60,23 @@ if(isset($_POST['btn_login'])) {
         </script>       
         ';
         
-        header('refresh:2;user.php');
-    } 
+        header('refresh:1;user.php');
+    } else {
+          echo '
+        <script type="text/javascript">
+        jQuery(
+        function validation(){
+        swal({
+  title: "E-mail or password is wrong!",
+  text: "Details not matched",
+  icon: "error",
+  button: "Ok!",
+});
+        });     
+        </script>       
+        ';
+        
+    }
 }
 ?>
 
