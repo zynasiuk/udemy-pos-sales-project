@@ -1,4 +1,5 @@
 <?php
+// role admin or user; create user.php
 include_once'connectdb.php';
 session_start();
 if(isset($_POST['btn_login'])) {
@@ -10,10 +11,13 @@ if(isset($_POST['btn_login'])) {
     $select->execute();
 
     $row = $select->fetch(PDO::FETCH_ASSOC);
-   //     if($row['useremail']==$useremail AND $row['password']==$password AND !empty($useremail && $password)) { 
-    if($row['useremail']==$useremail AND $row['password']==$password) {
+
+    if($row['useremail']==$useremail AND $row['password']==$password AND $row['role']=="Admin") {
         echo $success="Login successful";
         header('refresh:1;dashboard.php');
+    } else if($row['useremail']==$useremail AND $row['password']==$password AND $row['role']=="User"){
+         echo "Login successful";
+        header('refresh:1;user.php');
     } else {
         echo 'Login failed';
     }
