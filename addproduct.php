@@ -172,7 +172,7 @@ $productimage=$f_newfile;
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Stock</label>
-                            <input type="number" min="1" step="1" class="form-control" name="txtstock" placeholder="Enter price">
+                            <input type="number" min="1" step="1" class="form-control" name="txtstock" placeholder="Enter quantity">
                         </div>
                         <div class="form-group">
                             <label>Description</label>
