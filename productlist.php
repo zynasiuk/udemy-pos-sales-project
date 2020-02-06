@@ -1,6 +1,9 @@
 <?php
 include_once'connectdb.php';
 session_start();
+if ($_SESSION['useremail']==""  OR $_SESSION['role']=='User' ) {
+    header('location:index.php');
+}
 include_once'header.php';
 ?>
 
@@ -71,7 +74,7 @@ include_once'header.php';
           <a href="editproduct.php?id='.$row->pid.'" class="btn btn-info" role="button"><span class="glyphicon glyphicon-edit" style="color:#ffffff" data-toggle="tooltip" title="Edit product"></span></a>
           </td>   
                   <td>
-          <a href="deleteproduct.php?id='.$row->pid.'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash" style="color:#ffffff" data-toggle="tooltip" title="Delete product"></span></a>
+          <button id='.$row->pid.' class="btn btn-danger btndelete"><span class="glyphicon glyphicon-trash" style="color:#ffffff" data-toggle="tooltip" title="Delete product"></span></button>
           </td>   
       </tr>          
             ';
@@ -89,13 +92,59 @@ include_once'header.php';
 
 
 <script>
+    //zmniejszajaca sie kolejnosc
 $(document).ready(function () {
-    $('#producttable').DataTable();
+    $('#producttable').DataTable({
+        "order":[[0,"desc"]]
+    });
 } );
-
+//tooltip - bootstrapowy hint
 $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
 } );
+
+// ajax
+$(document).ready(function(){
+    $('.btndelete').click(function(){
+       // alert("test");
+        let tdh = $(this);
+        let id = $(this).attr("id");
+        // alert(id);
+        
+        
+        swal({
+  title: "Are you sure?",
+  text: "Once deleted, you will not be able to recover this product!",
+  icon: "warning",
+  buttons: true,
+  dangerMode: true,
+})
+.then((willDelete) => {
+  if (willDelete) {
+      
+          $.ajax({
+        url:'productdelete.php',
+        type: 'post',
+        data: {
+            pidd: id
+        },
+        success:function(data) {
+            tdh.parents('tr').hide();
+        }
+    });
+      
+      
+    swal("Your product has been deleted!", {
+      icon: "success",
+    });
+  } else {
+    swal("Your product is safe!");
+  }
+});
+        
+    
+    });
+});
 </script>
 
 <?php
