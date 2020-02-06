@@ -24,8 +24,8 @@ $store = "productimages/".$f_newfile;
     
     
 if($f_extension=='jpg' || $f_extension=='jpeg' || $f_extension == 'png' || $f_extension=='gif' || $f_extension == 'svg') {
-    echo '<br>extention ok <br>';
-    if($f_size >=1000000) { //spr rowmiar
+ //   echo '<br>extention ok <br>';
+    if($f_size >=1000000) { //spr rozmiar
            $error = '<script type="text/javascript">
         jQuery(
         function validation(){
