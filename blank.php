@@ -1,4 +1,6 @@
 <?php
+include_once'connectdb.php';
+session_start();
 include_once'header.php';
 ?>
 
