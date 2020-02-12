@@ -3,24 +3,57 @@ include_once'connectdb.php';
 session_start();
 
 // krok1: pobierz wszystkie z tbl_product i tworz opcje do wybory tak dlugo jak sa wyniki zwrotu z db
-function fill_product($pdo) {
+function fill_product($pdo,$pid) {
     $output = '';
     $select = $pdo->prepare("select * from tbl_product order by pname asc");
     $select -> execute();
     $result = $select -> fetchAll();
     
     foreach($result as $row) {
-        $output.= '<option value="'.$row["pid"].'">'.$row["pname"].'</option>';
+        $output.= '<option value="'.$row["pid"].'"';
+        if($pid==$row['pid']){
+            $output.='selected';
+        }   
+        $output.='>'.$row["pname"].'</option>';
     }
+    
     return $output;
 }
-// krok2: uzyj select2 plugin aby moc rowniez wyszukiwac produkty
+// krok1: edytuj createorder
 
-// krok3: pobierz dane i wpisz je do innych pol w dziale z jQuery
+// krok2: pobierz dane i wpisz je do innych pol w formularzu przy php
 
-// krok 745: save order in db
 
-if (isset($_POST['btnsaveorder'])) {
+$id=$_GET['id'];
+$select = $pdo -> prepare("select * from tbl_invoice where invoice_id=$id");
+$select -> execute();
+
+$row=$select -> fetch(PDO::FETCH_ASSOC);
+$customer_name = $row['customer_name'];
+$order_date = date('Y-m-d', strtotime($row['order_date']));
+$subtotal = $row['subtotal'];
+$tax = $row['tax'];
+$discount = $row['discount'];
+$total = $row['total'];
+$paid = $row['paid'];
+$due = $row['due'];
+$payment_type = $row['payment_type'];
+
+
+$select = $pdo -> prepare("select * from tbl_invoice_details where invoice_id=$id");
+$select -> execute();
+
+$row_invoice_details =$select -> fetchAll();
+
+
+
+
+
+
+
+
+
+if (isset($_POST['btnupdateorder'])) {
     $customer_name = $_POST['txtcustomer'];
     $order_date = date('Y-m-d', strtotime($_POST['orderdate']));
     $subtotal = $_POST['txtsubtotal'];
@@ -102,8 +135,7 @@ include_once'header.php';
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-
-            Create Order
+            Your Order
             <small></small>
         </h1>
         <ol class="breadcrumb">
@@ -122,7 +154,7 @@ include_once'header.php';
             <!-- form start -->
             <form action="" method="post" name="">
                 <div class="box-header with-border">
-                    <h3 class="box-title">New Order</h3>
+                    <h3 class="box-title">Edit Order</h3>
                 </div>
                 <!-- /.box-header -->
 
@@ -138,7 +170,7 @@ include_once'header.php';
                                 <div class="input-group-addon">
                                     <i class="fa fa-user"></i>
                                 </div>
-                                <input type="text" class="form-control" name="txtcustomer" placeholder="Enter Customer Name" required>
+                                <input type="text" class="form-control" name="txtcustomer" value="<?php echo $customer_name; ?>" required>
                             </div>
                         </div>
 
@@ -153,7 +185,7 @@ include_once'header.php';
                                 <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
-                                <input type="text" class="form-control pull-right" id="datepicker" name="orderdate" value="<?php echo date("Y-m-d"); ?>" data-date-format="yyyy-mm-dd" required readonly>
+                                <input type="text" class="form-control pull-right" id="datepicker" name="orderdate" value="<?php echo $order_date; ?>" required readonly>
                             </div>
                             <!-- /.input group -->
                         </div>
@@ -176,12 +208,39 @@ include_once'header.php';
                                         <th>Enter Quantity</th>
                                         <th>Total</th>
                                         <th>
-                                            <center><button type="button" name="add" class="btn btn-success btn-sm btnadd"><span class="glyphicon glyphicon-plus"></span></button></center>
+                                            <center><button type="button" name="add" class="btn btn-info btn-sm btnadd"><span class="glyphicon glyphicon-plus"></span></button></center>
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                </tbody>
+
+
+                                <?php
+                                foreach($row_invoice_details as $item_invoice_details) {
+                                    $select = $pdo -> prepare("select * from tbl_product where pid='{$item_invoice_details['product_id']}'");
+                                    $select -> execute();
+                                    
+                                    $row_product = $select -> fetch(PDO::FETCH_ASSOC);                                                           
+                                
+                                  ?>
+<tr>
+    <?php
+    
+     echo '<td><input type="hidden" class="form-control pname" name="productname[]" readonly></td>';
+
+            echo '<td><select class="form-control productidedit" name="productid[]" style="width: 200px;"><option value="">Select Option</option>'.fill_product($pdo,$item_invoice_details['product_id']).'</select></td>';
+            echo '<td><input type="text" class="form-control stock" name="stock[]" value="'.$row_product['pstock'].'" readonly></td>';
+            echo '<td><input type="text" class="form-control price" name="price[]" value="'.$row_product['saleprice'].'" readonly></td>';
+            echo '<td><input type="number" min="1" class="form-control qty" value="'.$item_invoice_details['qty'].'" name="qty[]"></td>';
+          echo '<td><input type="text" class="form-control total" name="total[]" value="'.$row_product['saleprice']*$item_invoice_details['qty'].'" readonly></td>';
+
+            echo '<td><center><button type="button" name="remove" class="btn btn-danger btn-sm btnremove"><span class="glyphicon glyphicon-remove"></span></button></center></td></tr>';
+    
+    ?>
+    
+    
+</tr>
+ <?php } ?>
+
                             </table>
                         </div>
                     </div>
@@ -201,7 +260,7 @@ include_once'header.php';
                                 <div class="input-group-addon">
                                     <i class="fa fa-eur"></i>
                                 </div>
-                                <input type="text" class="form-control" name="txtsubtotal"  id="txtsubtotal" required readonly>
+                                <input type="text" class="form-control" name="txtsubtotal" id="txtsubtotal" value="<?php echo $subtotal; ?>" required readonly>
                             </div>
                         </div>
                         <div class="form-group">
@@ -210,7 +269,7 @@ include_once'header.php';
                                 <div class="input-group-addon">
                                     <i class="fa fa-eur"></i>
                                 </div>
-                                <input type="text" class="form-control" name="txttax" id="txttax" required readonly>
+                                <input type="text" class="form-control" name="txttax" id="txttax" value="<?php echo $tax; ?>" required readonly>
                             </div>
                         </div>
                         <div class="form-group">
@@ -219,7 +278,7 @@ include_once'header.php';
                                 <div class="input-group-addon">
                                     <i class="fa fa-eur"></i>
                                 </div>
-                                <input type="text" class="form-control" name="txtdiscount" id="txtdiscount" required>
+                                <input type="text" class="form-control" name="txtdiscount" id="txtdiscount" value="<?php echo $discount; ?>" required>
                             </div>
                         </div>
 
@@ -237,7 +296,7 @@ include_once'header.php';
                                 <div class="input-group-addon">
                                     <i class="fa fa-eur"></i>
                                 </div>
-                                <input type="text" class="form-control" name="txttotal" id="txttotal" required readonly>
+                                <input type="text" class="form-control" name="txttotal" id="txttotal" value="<?php echo $total; ?>" required readonly>
                             </div>
                         </div>
 
@@ -247,7 +306,7 @@ include_once'header.php';
                                 <div class="input-group-addon">
                                     <i class="fa fa-eur"></i>
                                 </div>
-                                <input type="text" class="form-control" name="txtpaid" id="txtpaid" required>
+                                <input type="text" class="form-control" name="txtpaid" id="txtpaid" value="<?php echo $paid; ?>" required>
                             </div>
                         </div>
 
@@ -257,7 +316,7 @@ include_once'header.php';
                                 <div class="input-group-addon">
                                     <i class="fa fa-eur"></i>
                                 </div>
-                                <input type="text" class="form-control" name="txtdue" id="txtdue" required readonly>
+                                <input type="text" class="form-control" name="txtdue" id="txtdue" value="<?php echo $due; ?>" required readonly>
                             </div>
                         </div>
 
@@ -267,13 +326,13 @@ include_once'header.php';
                         <div class="form-group">
 
                             <label>
-                                <input type="radio" name="rb" class="minimal-red" value="Cash" checked> CASH
+                                <input type="radio" name="rb" class="minimal-red" value="Cash" <?php echo ($payment_type == 'Cash')?'checked':''; ?>> CASH
                             </label>
                             <label>
-                                <input type="radio" name="rb" class="minimal-red" value="Card"> CARD
+                                <input type="radio" name="rb" class="minimal-red" value="Card" <?php echo ($payment_type == 'Card')?'checked':''; ?>> CARD
                             </label>
                             <label>
-                                <input type="radio" name="rb" class="minimal-red" value="Check">
+                                <input type="radio" name="rb" class="minimal-red" value="Check" <?php echo ($payment_type == 'Check')?'checked':''; ?>>
                                 CHECK
                             </label>
                         </div>
@@ -283,7 +342,7 @@ include_once'header.php';
                 </div>
                 <hr>
                 <div align="center">
-                    <input type="submit" name="btnsaveorder" value="Save Order" class="btn btn-info">
+                    <input type="submit" name="btnupdateorder" value="Update Order" class="btn btn-warning">
                 </div>
 
                 <hr>
@@ -312,12 +371,44 @@ include_once'header.php';
 
     // add products to your order; FETCH DATA function ABOVE! - here insert fill_product($pdo) php code in select
     $(document).ready(function() {
+        
+                    //Initialize Select2 Elements
+            $('.productidedit').select2();
+
+            $(".productidedit").on('change', function(e) {
+                var productid = this.value;
+                var tr = $(this).parent().parent();
+                $.ajax({
+
+                    //w getproduct.php polacz sie z db i pobierz dane z tabeli produktow na podstawie id
+                    url: "getproduct.php",
+                    method: "get",
+                    data: {
+                        id: productid
+                    },
+                    success: function(data) {
+
+                        tr.find(".pname").val(data["pname"]);
+                        tr.find(".stock").val(data["pstock"]);
+                        tr.find(".price").val(data["saleprice"]);
+                        tr.find(".qty").val(1);
+
+                        tr.find(".total").val(tr.find(".qty").val() * tr.find(".price").val());
+                        calculate(0, 0);
+
+                    }
+                })
+            })
+        
+        
+        
+        
         $(document).on('click', '.btnadd', function() {
             var html = '';
             html += '<tr>';
             html += '<td><input type="hidden" class="form-control pname" name="productname[]" readonly></td>';
 
-            html += '<td><select class="form-control productid" name="productid[]" style="width: 200px;"><option value="">Select Option</option><?php echo fill_product($pdo);?></select></td>';
+            html += '<td><select class="form-control productid" name="productid[]" style="width: 200px;"><option value="">Select Option</option><?php echo fill_product($pdo,'');?></select></td>';
             html += '<td><input type="text" class="form-control stock" name="stock[]" readonly></td>';
             html += '<td><input type="text" class="form-control price" name="price[]" readonly></td>';
             html += '<td><input type="number" min="1" class="form-control qty" name="qty[]"></td>';
@@ -349,7 +440,7 @@ include_once'header.php';
                         tr.find(".qty").val(1);
 
                         tr.find(".total").val(tr.find(".qty").val() * tr.find(".price").val());
-                        calculate(0,0);
+                        calculate(0, 0);
 
                     }
                 })
@@ -358,9 +449,9 @@ include_once'header.php';
 
         // remove products from your order
         $(document).on('click', '.btnremove', function() {
-            $(this).closest('tr').remove();           
+            $(this).closest('tr').remove();
             $('#txtpaid').val(0);
-            calculate(0,0);
+            calculate(0, 0);
         })
 
         // oblicz i wyswietl cene za ilosc produktow
@@ -372,10 +463,10 @@ include_once'header.php';
                 swal("WARNING", "Not availiby in this number of quantity", "warning");
                 quantity.val(1);
                 tr.find(".total").val(quantity.val() * tr.find(".price").val());
-                calculate(0,0);
+                calculate(0, 0);
             } else {
                 tr.find(".total").val(quantity.val() * tr.find(".price").val());
-                calculate(0,0);
+                calculate(0, 0);
             }
         })
 
@@ -388,28 +479,28 @@ include_once'header.php';
             var total = 0;
             var paid_amd = paid;
             var due = 0;
-            
-            $(".total").each(function(){
-                subtotal = subtotal +($(this).val()*1);
+
+            $(".total").each(function() {
+                subtotal = subtotal + ($(this).val() * 1);
             })
-            
+
             tax = 0.05 * subtotal;
-            net_total = tax+subtotal;
-            net_total = net_total-discount;
-            due = net_total-paid_amd;
-            
+            net_total = tax + subtotal;
+            net_total = net_total - discount;
+            due = net_total - paid_amd;
+
             $("#txtsubtotal").val(subtotal.toFixed(2));
             $("#txttax").val(tax.toFixed(2));
-            $('#txttotal').val(net_total.toFixed(2));          
+            $('#txttotal').val(net_total.toFixed(2));
             $('#txtdiscount').val(discount);
             $('#txtdue').val(due.toFixed(2));
-            
+
             $('#txtdiscount').keyup(function() {
                 var paid = $("#txtpaid").val();
                 var discount = $(this).val();
                 calculate(discount, paid);
             })
-            
+
             $('#txtpaid').keyup(function() {
                 var paid = $(this).val();
                 var discount = $("#txtdiscount").val();
