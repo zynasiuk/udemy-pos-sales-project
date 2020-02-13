@@ -69,7 +69,7 @@ include_once'header.php';
           <td>'.$row->payment_type.'</td> 
 
           <td>
-          <a href="viewproduct.php?id='.$row->invoice_id.'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-print" style="color:#ffffff" data-toggle="tooltip" title="Print Invoice"></span></a>
+          <a href="invoice.php?id='.$row->invoice_id.'" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-print" style="color:#ffffff" data-toggle="tooltip" title="Print Invoice"></span></a>
           </td>   
         <td>
           <a href="editorder.php?id='.$row->invoice_id.'" class="btn btn-info" role="button"><span class="glyphicon glyphicon-edit" style="color:#ffffff" data-toggle="tooltip" title="Edit Order"></span></a>
@@ -105,6 +105,51 @@ include_once'header.php';
     $(document).ready(function() {
         $('[data-toggle="tooltip"]').tooltip();
     });
+    
+    
+        // ajax
+    $(document).ready(function() {
+        $('.btndelete').click(function() {
+            // alert("test");
+            let tdh = $(this);
+            let id = $(this).attr("id");
+            // alert(id);
+
+
+            swal({
+                    title: "Are you sure?",
+                    text: "Once deleted, you will not be able to recover this Order!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                .then((willDelete) => {
+                    if (willDelete) {
+
+                        $.ajax({
+                            url: 'orderdelete.php',
+                            type: 'post',
+                            data: {
+                                pidd: id
+                            },
+                            success: function(data) {
+                                tdh.parents('tr').hide();
+                            }
+                        });
+
+
+                        swal("Your Order has been deleted!", {
+                            icon: "success",
+                        });
+                    } else {
+                        swal("Your Order is safe!");
+                    }
+                });
+
+
+        });
+    });
+    
 
 </script>
 

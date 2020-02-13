@@ -43,7 +43,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
         apply the skin class to the body tag so the changes take effect. -->
   <link rel="stylesheet" href="dist/css/skins/skin-blue.min.css">
   
-
+  <!-- Select2 -->
+  <link rel="stylesheet" href="bower_components/select2/dist/css/select2.min.css">
+  <!-- Select2 -->
+<script src="bower_components/select2/dist/js/select2.full.min.js"></script>
+  
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -195,7 +199,8 @@ desired effect
         <li><a href="category.php"><i class="fa fa-list-alt"></i> <span>Category</span></a></li>
         <li><a href="addproduct.php"><i class="fa fa-product-hunt"></i> <span>Add Product</span></a></li>
         <li><a href="productlist.php"><i class="fa fa-th-list"></i> <span>Product List</span></a></li>        
-        <li><a href="createorder.php"><i class="fa fa-th-list"></i> <span>Create Orde</span></a></li>
+        <li><a href="createorder.php"><i class="fa fa-first-order"></i> <span>Create Order</span></a></li>
+        <li><a href="orderlist.php"><i class="fa fa-th-list"></i> <span>Order List</span></a></li>     
         <li><a href="registration.php"><i class="fa fa-registered"></i> <span>Registration</span></a></li>
         
         

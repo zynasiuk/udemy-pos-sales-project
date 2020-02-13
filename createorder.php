@@ -85,10 +85,8 @@ if (isset($_POST['btnsaveorder'])) {
             $insert->execute();
            
         }
-        // echo "success! yar -------";
         header('location:orderlist.php');
-    }
-        
+    }        
 }
 
 include_once'header.php';
@@ -227,9 +225,6 @@ include_once'header.php';
 
 
 
-
-
-
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Total</label>
@@ -261,7 +256,6 @@ include_once'header.php';
                             </div>
                         </div>
 
-                        <!-- radio -->
                         <!-- radio -->
                         <label>Payment Method</label>
                         <div class="form-group">
@@ -303,11 +297,12 @@ include_once'header.php';
         autoclose: true
     });
 
-    //Flat red color scheme for iCheck
-    $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
-        checkboxClass: 'icheckbox_flat-green',
-        radioClass: 'iradio_flat-green'
-    });
+
+    //Red color scheme for iCheck
+    $('input[type="checkbox"].minimal-red, input[type="radio"].minimal-red').iCheck({
+        checkboxClass: 'icheckbox_minimal-red',
+        radioClass: 'iradio_minimal-red'
+    })
 
 
     // add products to your order; FETCH DATA function ABOVE! - here insert fill_product($pdo) php code in select
@@ -315,7 +310,7 @@ include_once'header.php';
         $(document).on('click', '.btnadd', function() {
             var html = '';
             html += '<tr>';
-            html += '<td><input type="hidden" class="form-control pname" name="productname[]" readonly></td>';
+            html += '<td><input type="hidden" class="form-control pname" name="productname[]" value="'.$row_product['pname'].'" readonly></td>';
 
             html += '<td><select class="form-control productid" name="productid[]" style="width: 200px;"><option value="">Select Option</option><?php echo fill_product($pdo);?></select></td>';
             html += '<td><input type="text" class="form-control stock" name="stock[]" readonly></td>';
@@ -378,7 +373,6 @@ include_once'header.php';
                 calculate(0,0);
             }
         })
-
 
 
         function calculate(dis, paid) {
