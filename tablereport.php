@@ -29,7 +29,7 @@ include_once'header.php';
         | Your Page Content Here |
         -------------------------->
         <div class="box box-warning">
-              <form  action="" method="post" name="">
+              <form  action="" method="post" name="" autocomplete="off">
             <div class="box-header with-border">
                 <h3 class="box-title">From: <?php echo $_POST['date_1']?> To: <?php echo $_POST['date_2']?></h3>
             </div>

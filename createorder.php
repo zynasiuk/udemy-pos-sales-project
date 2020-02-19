@@ -310,15 +310,14 @@ include_once'header.php';
         $(document).on('click', '.btnadd', function() {
             var html = '';
             html += '<tr>';
-            html += '<td><input type="hidden" class="form-control pname" name="productname[]" value="'.$row_product['pname'].'" readonly></td>';
-
+html+='<td><input type="hidden" class="form-control pname" name="productname[]" readonly></td>';
             html += '<td><select class="form-control productid" name="productid[]" style="width: 200px;"><option value="">Select Option</option><?php echo fill_product($pdo);?></select></td>';
             html += '<td><input type="text" class="form-control stock" name="stock[]" readonly></td>';
             html += '<td><input type="text" class="form-control price" name="price[]" readonly></td>';
             html += '<td><input type="number" min="1" class="form-control qty" name="qty[]"></td>';
             html += '<td><input type="text" class="form-control total" name="total[]" readonly></td>';
 
-            html += '<td><center><button type="button" name="remove" class="btn btn-danger btn-sm btnremove"><span class="glyphicon glyphicon-remove"></span></button></center></td></tr>';
+            html += '<td><center><button type="button" name="remove" class="btn btn-danger btn-sm btnremove"><span class="glyphicon glyphicon-remove"></span></button></center></td>';
 
             $('#producttable').append(html);
 
