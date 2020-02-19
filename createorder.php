@@ -1,6 +1,9 @@
 <?php
 include_once'connectdb.php';
 session_start();
+if($_SESSION['useremail']=="" OR $_SESSION['role']==""){  
+    header('location:index.php');
+}
 
 // krok1: pobierz wszystkie z tbl_product i tworz opcje do wybory tak dlugo jak sa wyniki zwrotu z db
 function fill_product($pdo) {
@@ -89,7 +92,11 @@ if (isset($_POST['btnsaveorder'])) {
     }        
 }
 
+if($_SESSION['role']=="Admin"){  
 include_once'header.php';
+} else {
+ include_once'headeruser.php';   
+}
 ?>
 
 
@@ -415,5 +422,6 @@ html+='<td><input type="hidden" class="form-control pname" name="productname[]" 
 </script>
 
 <?php
+
 include_once'footer.php';
 ?>
